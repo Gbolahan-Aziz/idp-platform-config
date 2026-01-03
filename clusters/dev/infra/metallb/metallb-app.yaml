@@ -8,9 +8,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/metallb/metallb.git
-    targetRevision: v0.14.9
-    path: config/manifests
+    repoURL: https://metallb.github.io/metallb
+    chart: metallb
+    targetRevision: 0.14.9
+    helm:
+      values: |
+        crds:
+          enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system
