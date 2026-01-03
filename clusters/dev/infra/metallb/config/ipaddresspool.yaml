@@ -3,15 +3,8 @@ kind: IPAddressPool
 metadata:
   name: kind-pool
   namespace: metallb-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   addresses:
     - 172.19.255.200-172.19.255.250
----
-apiVersion: metallb.io/v1beta1
-kind: L2Advertisement
-metadata:
-  name: l2adv
-  namespace: metallb-system
-spec:
-  ipAddressPools:
-    - kind-pool
