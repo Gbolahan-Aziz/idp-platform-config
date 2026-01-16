@@ -2,23 +2,33 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: platform-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: platform-ingress
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: platform-observability
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: platform-logging
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: platform-security
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
