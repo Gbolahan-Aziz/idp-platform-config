@@ -17,6 +17,9 @@ spec:
           replicaCount: 1
           service:
             type: LoadBalancer
+            nodePorts:
+              http: 32142
+              https: 30689
           admissionWebhooks:
             enabled: false
   destination:
