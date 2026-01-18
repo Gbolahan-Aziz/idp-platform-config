@@ -1,0 +1,26 @@
+service:
+  name: whoami
+  type: stateless
+  env: dev
+  team: demo
+
+image:
+  repo: ghcr.io/traefik/whoami
+  tag: latest
+
+runtime:
+  port: 80
+  health:
+    path: /
+
+deploy:
+  replicas: 1
+
+resources:
+  profile: api-small
+
+expose:
+  enabled: true
+  host: whoami.local
+  path: /
+  className: nginx

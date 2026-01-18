@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: whoami
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/Gbolahan-Aziz/idp-platform-config.git
+    targetRevision: main
+
+    # ✅ This tells Argo: "use the Helm chart located in this repo at this path"
+    path: service-template
+
+    helm:
+      # ✅ This tells Argo: "override the chart defaults using this values file"
+      valueFiles:
+        - ../clusters/dev/apps/demo/whoami/service.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo-dev
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
