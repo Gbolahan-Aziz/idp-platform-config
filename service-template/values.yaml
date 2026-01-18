@@ -1,11 +1,6 @@
-# ----------------------------
-# IDP Service Contract (v1)
-# Developers should override only what they need.
-# ----------------------------
-
 service:
   name: ""
-  type: stateless   # stateless | stateful | job
+  type: stateless
   env: dev
   team: default
 
@@ -25,22 +20,21 @@ deploy:
   replicas: 1
 
 job:
-  command: []
+  command: []              # keep array (schema-valid)
   backoffLimit: 2
   ttlSecondsAfterFinished: 600
 
 engine:
-  name: ""          # postgres | mysql | redis | mssql (we'll validate later)
+  name: ""                 # keep string (schema-valid)
   version: ""
 
 storage:
-  size: ""          # required for stateful (validated)
-  class: ""         # e.g. local-path (kind), gp2/gp3 (aws), managed-premium (azure)
+  size: ""                 # keep string (schema-valid)
+  class: ""
 
 resources:
   profile: api-small
 
-# Platform-owned profiles (safe defaults)
 profiles:
   api-small:
     requests:
