@@ -1,0 +1,89 @@
+# ----------------------------
+# IDP Service Contract (v1)
+# Developers should override only what they need.
+# ----------------------------
+
+service:
+  name: ""
+  type: stateless   # stateless | stateful | job
+  env: dev
+  team: default
+
+image:
+  repo: ""
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+runtime:
+  port: 8080
+  health:
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+deploy:
+  replicas: 1
+
+job:
+  command: []
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 600
+
+engine:
+  name: ""          # postgres | mysql | redis | mssql (we'll validate later)
+  version: ""
+
+storage:
+  size: ""          # required for stateful (validated)
+  class: ""         # e.g. local-path (kind), gp2/gp3 (aws), managed-premium (azure)
+
+resources:
+  profile: api-small
+
+# Platform-owned profiles (safe defaults)
+profiles:
+  api-small:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  api-medium:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+  db-small:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+
+  db-medium:
+    requests:
+      cpu: "1"
+      memory: 2Gi
+    limits:
+      cpu: "2"
+      memory: 4Gi
+
+  job-small:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+expose:
+  enabled: false
+  host: ""
+  path: /
+  className: nginx

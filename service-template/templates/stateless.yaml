@@ -1,0 +1,89 @@
+{{- if eq (.Values.service.type | default "stateless") "stateless" -}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idp.fullname" . }}
+  namespace: {{ include "idp.namespace" . }}
+  labels:
+{{ include "idp.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.deploy.replicas | default 1 }}
+  selector:
+    matchLabels:
+{{ include "idp.selectorLabels" . | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "idp.selectorLabels" . | indent 8 }}
+{{ include "idp.labels" . | indent 8 }}
+    spec:
+      containers:
+        - name: {{ include "idp.name" . }}
+          image: "{{ required "image.repo is required" .Values.image.repo }}:{{ .Values.image.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: {{ required "runtime.port is required for stateless services" .Values.runtime.port }}
+              protocol: TCP
+
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.runtime.health.path | default "/health" }}
+              port: http
+            initialDelaySeconds: {{ .Values.runtime.health.initialDelaySeconds | default 5 }}
+            periodSeconds: {{ .Values.runtime.health.periodSeconds | default 10 }}
+
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.runtime.health.path | default "/health" }}
+              port: http
+            initialDelaySeconds: {{ add (.Values.runtime.health.initialDelaySeconds | default 5) 10 }}
+            periodSeconds: {{ .Values.runtime.health.periodSeconds | default 10 }}
+
+          resources:
+{{ include "idp.profile" . | indent 12 }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "idp.fullname" . }}
+  namespace: {{ include "idp.namespace" . }}
+  labels:
+{{ include "idp.labels" . | indent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+{{ include "idp.selectorLabels" . | indent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.expose.port | default .Values.runtime.port }}
+      targetPort: http
+      protocol: TCP
+
+{{- if .Values.expose.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "idp.fullname" . }}
+  namespace: {{ include "idp.namespace" . }}
+  labels:
+{{ include "idp.labels" . | indent 4 }}
+spec:
+  ingressClassName: {{ .Values.expose.className | default "nginx" }}
+  rules:
+    - host: {{ required "expose.host is required when expose.enabled=true" .Values.expose.host }}
+      http:
+        paths:
+          - path: {{ .Values.expose.path | default "/" }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "idp.fullname" . }}
+                port:
+                  name: http
+{{- end }}
+
+{{- end -}}

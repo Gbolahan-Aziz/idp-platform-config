@@ -1,0 +1,16 @@
+apiVersion: v2
+name: idp-service-template
+description: Internal Developer Platform service renderer (stateless, stateful, job)
+type: application
+
+version: 0.1.0
+appVersion: "1.0"
+
+keywords:
+  - idp
+  - platform
+  - internal-developer-platform
+  - kubernetes
+
+maintainers:
+  - name: platform-team
