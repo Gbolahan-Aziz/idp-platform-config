@@ -4,6 +4,9 @@ metadata:
   name: dev-apps
   namespace: argocd
 spec:
+  goTemplate: true
+  goTemplateOptions:
+    - "missingkey=error"
   generators:
     - git:
         repoURL: https://github.com/Gbolahan-Aziz/idp-platform-config.git
@@ -12,7 +15,7 @@ spec:
           - path: clusters/dev/apps/*/*
   template:
     metadata:
-      name: dev-{{path.basenameNormalized}}
+      name: dev-{{path.basename}}
       labels:
         idp.environment: dev
     spec:
