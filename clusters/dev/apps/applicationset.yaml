@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dev-apps
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/Gbolahan-Aziz/idp-platform-config.git
+        revision: main
+        directories:
+          - path: clusters/dev/apps/*/*
+  template:
+    metadata:
+      name: dev-{{path.basenameNormalized}}
+      labels:
+        idp.environment: dev
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/Gbolahan-Aziz/idp-platform-config.git
+        targetRevision: main
+        path: service-template
+        helm:
+          valueFiles:
+            - ../{{path}}/service.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{path.segments[3]}}-dev"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
