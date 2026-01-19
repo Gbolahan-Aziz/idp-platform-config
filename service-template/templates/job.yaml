@@ -1,0 +1,27 @@
+{{- if eq .Values.service.type "job" -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "idp.fullname" . }}
+  labels:
+    {{- include "idp.labels" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  {{- if .Values.job.ttlSecondsAfterFinished }}
+  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- include "idp.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ include "idp.fullname" . }}
+          image: "{{ required "image.repo is required" .Values.image.repo }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            {{- toYaml .Values.job.command | nindent 12 }}
+          resources:
+            {{- include "idp.resourcesForProfile" . | nindent 12 }}
+{{- end -}}

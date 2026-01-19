@@ -77,3 +77,18 @@ Fails fast if profile doesn't exist in profiles map.
 {{- end -}}
 {{- $profile | toYaml -}}
 {{- end -}}
+
+{{- define "idp.resourcesForProfile" -}}
+{{- $p := .Values.resources.profile -}}
+{{- $profiles := .Values.profiles -}}
+{{- if and $profiles (hasKey $profiles $p) -}}
+{{- toYaml (index $profiles $p) -}}
+{{- else -}}
+requests:
+  cpu: 100m
+  memory: 128Mi
+limits:
+  cpu: 250m
+  memory: 256Mi
+{{- end -}}
+{{- end -}}

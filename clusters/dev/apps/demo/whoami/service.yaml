@@ -1,26 +1,17 @@
 service:
-  name: whoami
-  type: stateless
+  name: hello-job
+  type: job
   env: dev
   team: demo
 
 image:
-  repo: ghcr.io/traefik/whoami
-  tag: latest
-
-runtime:
-  port: 80
-  health:
-    path: /
-
-deploy:
-  replicas: 1
+  repo: busybox
+  tag: "1.36"
 
 resources:
-  profile: api-small
+  profile: job-small
 
-expose:
-  enabled: true
-  host: whoami.local
-  path: /
-  className: nginx
+job:
+  command: ["sh", "-c", "echo hello from job && sleep 2"]
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 120

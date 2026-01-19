@@ -1,0 +1,57 @@
+{{- if eq .Values.service.type "stateful" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "idp.fullname" . }}
+  labels:
+    {{- include "idp.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    {{- include "idp.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: tcp
+      port: {{ .Values.runtime.port }}
+      targetPort: {{ .Values.runtime.port }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "idp.fullname" . }}
+  labels:
+    {{- include "idp.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "idp.fullname" . }}
+  replicas: {{ .Values.deploy.replicas }}
+  selector:
+    matchLabels:
+      {{- include "idp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "idp.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "idp.fullname" . }}
+          image: "{{ required "image.repo is required" .Values.image.repo }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.runtime.port }}
+              name: tcp
+          resources:
+            {{- include "idp.resourcesForProfile" . | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        {{- if .Values.storage.class }}
+        storageClassName: {{ .Values.storage.class | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.size | quote }}
+{{- end -}}
