@@ -7,15 +7,17 @@ spec:
   goTemplate: true
   goTemplateOptions:
     - "missingkey=error"
+
   generators:
     - git:
         repoURL: https://github.com/Gbolahan-Aziz/idp-platform-config.git
         revision: main
         directories:
           - path: clusters/dev/apps/*/*
+
   template:
     metadata:
-      name: dev-{{path.basename}}
+      name: dev-{{ .path.basename | lower }}
       labels:
         idp.environment: dev
     spec:
@@ -26,7 +28,7 @@ spec:
         path: service-template
         helm:
           valueFiles:
-            - ../{{path}}/service.yaml
+            - ../{{ .path }}/service.yaml
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{ .path.dirname | base | lower }}-dev'
