@@ -29,7 +29,7 @@ spec:
             - ../{{path}}/service.yaml
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{path.dirname | base | lower}}-dev"
+        namespace: '{{ .path.dirname | base | lower }}-dev'
       syncPolicy:
         automated:
           prune: true
