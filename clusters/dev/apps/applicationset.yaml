@@ -17,7 +17,7 @@ spec:
 
   template:
     metadata:
-      name: dev-{{ .path.basename | lower }}
+      name: dev-demo
       labels:
         idp.environment: dev
     spec:
